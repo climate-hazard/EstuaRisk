@@ -3,6 +3,18 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# MacOS X
+.DS_Store
+._*
+
+# Compressed files
+*.zip
+*.tar.gz
+*.bz2
+
+# Auxiliary maps
+data/downloaded/EA_Recorded*/docs/
+
 # C extensions
 *.so
 

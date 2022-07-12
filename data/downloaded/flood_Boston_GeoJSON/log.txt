@@ -1,0 +1,2 @@
+ERROR 6: EPSG PCS/GCS code 4327 not found in EPSG support files.  Is this a valid EPSG coordinate system?
+ERROR 1: Failed to process SRS definition: EPSG:4327

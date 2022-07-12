@@ -1,6 +1,8 @@
 import os
-import json
+import math
 import folium
+import random
+import logging
 import pandas as pd
 
 # Read geodata
@@ -14,57 +16,67 @@ m = folium.Map(location=[mean_lat, mean_lon], zoom_start=6)
 # Global tooltip
 tooltip = 'Click For More Info'
 
-# Create custom marker icon
-# logoIcon = folium.features.CustomIcon('logo.png', icon_size=(50, 50))
+# colors = ['red', 'darkred', 'lightred', 'darkpurple', 'pink']
+# colors = ['#feb5a5', '#ff9079', '#ff6a4a', '#ff4b24', '#fe3004']  # pinkish to reddish
+colors = ['#ffc300', '#ff5733', '#c70039', '#581845']  # orange to dark red (lime ''#daf7a6' is not good on maps)
+random_colors = random.choices(colors, k=len(df))
 
-# Vega data
-vis = os.path.join('data', 'vis.json')
-
-# Geojson Data
-overlay = os.path.join('data', 'overlay.json')
+areas = [139.2, 12.86, 251.8, 344.5, 417.3, 600.9, 1029,
+        6000,209, 150, 50, 4325, 9948, 2175.6]
 
 # Create markers
 for i in range(len(df)):
-    folium.Marker(
-        [df["Lat"][i], df["Lon"][i]],
-        popup=df["Tide"][i],
-        tooltip=tooltip
+    name = df.iloc[i]['Estuary']    # df['Estuary'][i]
+    lat = df.iloc[i]['Lat']
+    lon = df.iloc[i]['Lon']
+    risk_color = random_colors[i]
+
+    # folium.Marker(...).add_to(m)
+
+    folium.CircleMarker(
+        location=[lat, lon],
+        radius=math.sqrt(areas[i]),
+        popup=f'<h3>{name}</h3><p>Catchment area: {areas[i]} km²</p>',
+        color=risk_color,
+        fill=True,
+        fill_color=risk_color,
     ).add_to(m)
 
-# folium.Marker([42.363600, -71.099500],
-#               popup='<strong>Location One</strong>',
-#               tooltip=tooltip).add_to(m),
-# folium.Marker([42.333600, -71.109500],
-#               popup='<strong>Location Two</strong>',
-#               tooltip=tooltip,
-#               icon=folium.Icon(icon='cloud')).add_to(m),
-# folium.Marker([42.377120, -71.062400],
-#               popup='<strong>Location Three</strong>',
-#               tooltip=tooltip,
-#               icon=folium.Icon(color='purple')).add_to(m),
+    try:
+        overlay = os.path.join('..', 'data', 'downloaded',
+                f'EA_RecordedFloodOutlines_{name}', 'data', 
+                'Recorded_Flood_Outlines.json')
+        if os.path.getsize(overlay) > 1_000_000:
+            logging.warning(f'Omit big file recorded flooding in {name}')
+            continue
+
+        print(f'Added recorded flooding in {name}')
+        folium.GeoJson(overlay, name=f'Recorded flooding in {name}').add_to(m)
+    except:
+        logging.error(f'Error loading recorded flooding in {name}')
+    
+
 # folium.Marker([42.374150, -71.122410],
 #               popup='<strong>Location Four</strong>',
 #               tooltip=tooltip,
-#               icon=folium.Icon(color='green', icon='leaf')).add_to(m),
-# folium.Marker([42.375140, -71.032450],
-#               popup='<strong>Location Five</strong>',
-#               tooltip=tooltip,
-#               icon=logoIcon).add_to(m),
-# folium.Marker([42.315140, -71.072450],
-#               popup=folium.Popup(max_width=450).add_child(folium.Vega(json.load(open(vis)), width=450, height=250))).add_to(m)
+#               icon=folium.Icon(color='green', icon='leaf')).add_to(m), # 'cloud'
 
-# Circle marker
-# folium.CircleMarker(
-#     location=[42.466470, -70.942110],
-#     radius=50,
-#     popup='My Birthplace',
-#     color='#428bca',
-#     fill=True,
-#     fill_color='#428bca'
-# ).add_to(m)
 
 # Geojson overlay
-# folium.GeoJson(overlay, name='cambridge').add_to(m)
+overlay = os.path.join('..', 'data', 'downloaded',
+                'EA_RecordedFloodOutlines_Kent', 'data', 
+                'overlay_epsg.json')
+folium.GeoJson(overlay, name='recorded flooding in Kent').add_to(m)  # Simplified
+
+
+# Create a layer control object and add it to our map instance
+folium.LayerControl().add_to(m)
+
+# Create custom marker icon
+# logoIcon = folium.features.CustomIcon('logo.png', icon_size=(50, 50))
+
+# Show map
+# m
 
 # Generate map
 m.save('map.html')

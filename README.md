@@ -1,6 +1,8 @@
 # EstuaRisk
 Web-based tool to quantify estuarine flood risks in the UK.
 
+Participation to the CDE22 Hackathon UK.
+
 ### Concepts
 * Users can look up the map and see the hot spots with high estuarine risks based on analysis of the available data.
 * Users can interact by choosing climate change scenarios and observe the change in risk level.
