@@ -24,6 +24,24 @@ random_colors = random.choices(colors, k=len(df))
 areas = [139.2, 12.86, 251.8, 344.5, 417.3, 600.9, 1029,
         6000,209, 150, 50, 4325, 9948, 2175.6]
 
+img_filenames = [
+    '../img/Flood-Feb2020-Essex-EssexLive.jpg',
+    '../img/Flood-Dec2012-Camel-River-AdrianLangdon-blog.jpg',
+    '../img/Flood-Feb2022-Glasgow-Eyes.jpg',
+    '../img/Flood-Feb2021-Llanrwst-BBC.jpg',
+    '../img/Flood-Jan2011-Machynlleth-BBC.jpg',
+    '../img/Flood-Nov2012-Exeter-BBC.jpg',
+    '../img/Flood-Feb2021-Llanrwst-BBC.jpg',
+    '../img/Flood-2020-Edinburgh-OBrien_SWNS.jpg',
+    '../img/Flood-2019-York-Humber-Yorkshire-Post.jpg',
+    '../img/Flood-Dec2019-KentOnline.jpg',
+    '../img/Flood-Nov2018-Milford-Haven-Pembrokeshire-Herald.jpg',
+    '../img/Flood-Dec2021-Portsmouth-The-News.jpg',
+    '../img/Flood-2022-Severn-Ironbridge-Times.jpg',
+    '../img/Flood-2014-Thames-Mirror-UK.jpg',
+    '../img/Flood-Dec2013-Newcastle-ChronicleLive.jpg',
+]
+
 # Create markers
 for i in range(len(df)):
     name = df.iloc[i]['Estuary']    # df['Estuary'][i]
@@ -36,7 +54,8 @@ for i in range(len(df)):
     folium.CircleMarker(
         location=[lat, lon],
         radius=math.sqrt(areas[i]),
-        popup=f'<h3>{name}</h3><p>Catchment area: {areas[i]} km²</p>',
+        popup=f'''<h3>{name}</h3><p>Catchment area: {areas[i]} km²</p>
+                <img src="{img_filenames[i]}" width="200%">''',
         color=risk_color,
         fill=True,
         fill_color=risk_color,
