@@ -4,6 +4,14 @@ import pandas as pd
 
 
 def template(up, left, down, right, year_start, year_end):
+    ''' Create a template for the request.
+        Parameter: `up` - `float`, the upper (north-bound) latitude
+        Parameter: `left` - `float`, the left (west-bound) longitude
+        Parameter: `down` - `float`, the lower (south-bound) latitude
+        Parameter: `right` - `float`, the right (east-bound) longitude
+        Parameter: `year_start` - `int`, the start year
+        Parameter: `year_end` - `int`, the end year
+    '''
     return {
         'product_type': 'reanalysis',
         'format': 'grib',
@@ -49,7 +57,21 @@ c = cdsapi.Client()
 
 df = pd.read_csv('data/sea.csv')
 
+
 def get_data(name, up, left, down, right, year_start, year_end):
+    ''' Query data from CDS for a given gauge.
+
+        Parameter: `name` - `str`, the name of the gauge
+        Parameter: `up` - `float`, the upper (north-bound) latitude
+        Parameter: `left` - `float`, the left (west-bound) longitude
+        Parameter: `down` - `float`, the lower (south-bound) latitude
+        Parameter: `right` - `float`, the right (east-bound) longitude
+        Parameter: `year_start` - `int`, the start year
+        Parameter: `year_end` - `int`, the end year
+
+        Return: None
+        Side effect: The request is sent and the data is saved in a grib file.
+    '''
     print('Retrieving data for', name)
     template_dict = template(up, left, down, right, year_start, year_end)
     c.retrieve(
@@ -65,11 +87,15 @@ for index in range(len(df)):
     lat = df.iloc[index]['WaveLat']
     lon = df.iloc[index]['WaveLon']
 
+    # Request to CDS typically takes about 30 minutes to process.
+    # Due to latency in data downloading, parts of the following code
+    # are commented out and executed in turn.
+
     # get_data(site, lat+0.1, lon-0.1, lat-0.1, lon+0.1, 1959, 1968)
     # get_data(site, lat+0.1, lon-0.1, lat-0.1, lon+0.1, 1969, 1978)
     # get_data(site, lat+0.1, lon-0.1, lat-0.1, lon+0.1, 1979, 1988)
     # get_data(site, lat+0.1, lon-0.1, lat-0.1, lon+0.1, 1989, 1998)
     # get_data(site, lat+0.1, lon-0.1, lat-0.1, lon+0.1, 1999, 2008)
     # get_data(site, lat+0.1, lon-0.1, lat-0.1, lon+0.1, 2009, 2018)
-    if site == 'Severn':
+    if site != 'Severn':
         get_data(site, lat+0.1, lon-0.1, lat-0.1, lon+0.1, 2019, 2021)
