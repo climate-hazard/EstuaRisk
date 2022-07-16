@@ -97,5 +97,5 @@ for index in range(len(df)):
     # get_data(site, lat+0.1, lon-0.1, lat-0.1, lon+0.1, 1989, 1998)
     # get_data(site, lat+0.1, lon-0.1, lat-0.1, lon+0.1, 1999, 2008)
     # get_data(site, lat+0.1, lon-0.1, lat-0.1, lon+0.1, 2009, 2018)
-    if site != 'Severn':
+    if site != 'Severn' and site  > 'Kent':
         get_data(site, lat+0.1, lon-0.1, lat-0.1, lon+0.1, 2019, 2021)
