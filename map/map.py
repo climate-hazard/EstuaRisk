@@ -50,13 +50,13 @@ for i in range(len(df)):
     lon = df.iloc[i]['Lon']
     risk_color = random_colors[i]
 
-    # folium.Marker(...).add_to(m)
+    # folium.Marker(...icon=folium.Icon(color='green', icon='leaf')).add_to(m)  # icon can be 'leaf', 'cloud', etc.
 
     folium.CircleMarker(
         location=[lat, lon],
         radius=math.sqrt(areas[i]),
-        popup=f'''<h3>{name + '▷'*8}</h3><p>Catchment area: {areas[i]} km²</p>
-                <img src="{img_filenames[i]}" width="120%">''',
+        popup=f'''<h3>{name + '▷'*12}</h3><p>Catchment area: {areas[i]} km²</p>
+                <img src="{img_filenames[i]}" width="100%">''',
         color=risk_color,
         fill=True,
         fill_color=risk_color,
@@ -89,9 +89,5 @@ folium.LayerControl().add_to(m)
 
 m.save('map.html')
 
-# folium.Marker([42.374150, -71.122410],
-#               popup='<strong>Location Four</strong>',
-#               tooltip=tooltip,
-#               icon=folium.Icon(color='green', icon='leaf')).add_to(m), # 'cloud'
 # Create custom marker icon
 # logoIcon = folium.features.CustomIcon('logo.png', icon_size=(50, 50))

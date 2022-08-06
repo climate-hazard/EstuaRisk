@@ -1,6 +1,9 @@
 import time
 import cdsapi
+import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
+from mpl_toolkits.basemap import Basemap
 
 
 def template(up, left, down, right, year_start, year_end):
@@ -53,10 +56,6 @@ def template(up, left, down, right, year_start, year_end):
         ],
     }
 
-c = cdsapi.Client()
-
-df = pd.read_csv('data/sea.csv')
-
 
 def get_data(name, up, left, down, right, year_start, year_end):
     ''' Query data from CDS for a given gauge.
@@ -82,10 +81,38 @@ def get_data(name, up, left, down, right, year_start, year_end):
     print('Suspending for 60 seconds to avoid rate limiting')
     time.sleep(60)
 
+
+def plot_location(my_map, lat, lon):
+    x,y = my_map(lon, lat)
+    point = my_map.plot(x, y, 'bo', markersize=5)  # [0]
+    plt.show()
+
+
+def background_map():
+    my_map = Basemap(projection='lcc', resolution = 'l', area_thresh = 1000.0,
+            lat_0=52, lon_0=0, llcrnrlon=-10,llcrnrlat=46,urcrnrlon=8,urcrnrlat=62)
+    my_map.drawcoastlines()
+    my_map.drawcountries()
+    my_map.fillcontinents(color = 'coral')
+    my_map.drawmapboundary()
+    my_map.drawmeridians(np.arange(-14, 10, 2))
+    my_map.drawparallels(np.arange(46, 64, 2))
+    return my_map
+
+
+c = cdsapi.Client()
+
+df = pd.read_csv('data/sea.csv')
+
+map = background_map()
+coords = [(52.00,1.50), (50.75,-4.75), (55.50,-5.00), (53.50,-3.50), (52.50,-4.25), (50.50,-3.25), (56.25,-2.50),
+        (53.5,0.25), (54.00,-3.25), (51.75,-5.25), (50.75,-1.00), (51.25,-3.50), (51.50,1.00), (55.00,-1.25),]
+
 for index in range(len(df)):
     site = df.iloc[index]['Estuary']
     lat = df.iloc[index]['WaveLat']
     lon = df.iloc[index]['WaveLon']
+    plot_location(map, lat, lon)
 
     # Request to CDS typically takes about 30 minutes to process.
     # Due to latency in data downloading, parts of the following code
@@ -99,3 +126,5 @@ for index in range(len(df)):
     # get_data(site, lat+0.1, lon-0.1, lat-0.1, lon+0.1, 2009, 2018)
     if site != 'Severn' and site  > 'Kent':
         get_data(site, lat+0.1, lon-0.1, lat-0.1, lon+0.1, 2019, 2021)
+
+
