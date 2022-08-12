@@ -50,12 +50,12 @@ for i in range(len(df)):
     lon = df.iloc[i]['Lon']
     risk_color = random_colors[i]
 
-    # folium.Marker(...icon=folium.Icon(color='green', icon='leaf')).add_to(m)  # icon can be 'leaf', 'cloud', etc.
+    # ▷ folium.Marker(...icon=folium.Icon(color='green', icon='leaf')).add_to(m)  # icon can be 'leaf', 'cloud', etc.
 
     folium.CircleMarker(
         location=[lat, lon],
         radius=math.sqrt(areas[i]),
-        popup=f'''<h3>{name + '▷'*12}</h3><p>Catchment area: {areas[i]} km²</p>
+        popup=f'''<h3>{name + '⠀'*12}</h3><p>Catchment area: {areas[i]} km²</p>
                 <img src="{img_filenames[i]}" width="100%">''',
         color=risk_color,
         fill=True,
@@ -77,15 +77,23 @@ for i in range(len(df)):
     
 
 # Geojson overlay: need to convert from EPSG:27700 to EPSG:4326 (long/lat)
-overlay = os.path.join('..', 'data', 'downloaded',
+overlay_flood_geojson = os.path.join('..', 'data', 'downloaded',
                 'EA_RecordedFloodOutlines_Kent', 'data', 
                 'overlay_epsg.json')
-folium.GeoJson(overlay, name='recorded flooding in Kent').add_to(m)  # Simplified
+folium.GeoJson(overlay_flood_geojson, 
+            name='recorded flooding in Kent').add_to(m)  # Simplified
 
+# Image overlay (population density)
+img = folium.raster_layers.ImageOverlay(
+    name='UK population',
+    image='UK_population_overlay.png',
+    bounds=[[-8.4, 1.8], [50, 61]],
+    opacity=0.4,
+    zindex=1,
+    )
+img.add_to(m)
 
-# Create a layer control object and add it to our map instance
 folium.LayerControl().add_to(m)
-
 
 m.save('map.html')
 
