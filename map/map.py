@@ -55,7 +55,8 @@ for i in range(len(df)):
     folium.CircleMarker(
         location=[lat, lon],
         radius=math.sqrt(areas[i]),
-        popup=f'''<h3>{name + '⠀'*12}</h3><p>Catchment area: {areas[i]} km²</p>
+        popup=f'''<h3>{name.replace(' ', '⠀') + '⠀'*12}</h3>
+                <p>Catchment area: {areas[i]} km²</p>
                 <img src="{img_filenames[i]}" width="100%">''',
         color=risk_color,
         fill=True,
@@ -63,12 +64,23 @@ for i in range(len(df)):
     ).add_to(m)
 
     try:
-        overlay = os.path.join('..', 'data', 'downloaded',
-                f'EA_RecordedFloodOutlines_{name}', 'data', 
-                'Recorded_Flood_Outlines.json')
+        # overlay = os.path.join('..', 'data', 'downloaded',
+        #         f'EA_RecordedFloodOutlines_{name}', 'data', 
+        #         'Recorded_Flood_Outlines.json')
+        overlay = os.path.join('..', 'data', 'flood_outline',
+                f'Converted_Flood_Outlines_{name}.json')
         if os.path.getsize(overlay) > 1_000_000:
             logging.warning(f'Omit big file recorded flooding in {name}')
             continue
+
+        # Converting coordinates:
+        # https://gis.stackexchange.com/questions/166934/python-library-for-converting-geojson-multi-polygon-to-polygon
+        # https://pyproj4.github.io/pyproj/stable/api/transformer.html#pyproj-transform
+        # https://all-geo.org/volcan01010/2012/11/change-coordinates-with-pyproj/
+        # >>> from pyproj import Transformer
+        # >>> transformer = Transformer.from_crs("epsg:27700", "epsg:4326")
+        # >>> transformer.transform(581882.70000000019,214267.03999999911)
+        # (51.7974703631485, 0.6362507110039868)
 
         print(f'Added recorded flooding in {name}')
         folium.GeoJson(overlay, name=f'Recorded flooding in {name}').add_to(m)
