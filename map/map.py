@@ -49,19 +49,31 @@ for i in range(len(df)):
     lat = df.iloc[i]['Lat']
     lon = df.iloc[i]['Lon']
     risk_color = random_colors[i]
-
+    
     # ▷ folium.Marker(...icon=folium.Icon(color='green', icon='leaf')).add_to(m)  # icon can be 'leaf', 'cloud', etc.
-
-    folium.CircleMarker(
-        location=[lat, lon],
-        radius=math.sqrt(areas[i]),
-        popup=f'''<h3>{name.replace(' ', '⠀') + '⠀'*12}</h3>
-                <p>Catchment area: {areas[i]} km²</p>
-                <img src="{img_filenames[i]}" width="100%">''',
-        color=risk_color,
-        fill=True,
-        fill_color=risk_color,
-    ).add_to(m)
+    
+    if name == 'Conwy':
+        with open('plot_Conwy.html') as f:
+            html_code = f.read()
+        
+        chart = folium.Html(html_code, script=True)
+        iframe = folium.IFrame(html_code, script=True)
+        popup_chart = folium.Popup(iframe, max_width='100%')
+        folium.CircleMarker(
+            location=[lat, lon],
+            fill=True,
+            popup=popup_chart).add_to(m)
+    else:
+        folium.CircleMarker(
+            location=[lat, lon],
+            radius=math.sqrt(areas[i]),
+            popup=f'''<h3>{name.replace(' ', '⠀') + '⠀'*12}</h3>
+                    <p>Catchment area: {areas[i]} km²</p>
+                    <img src="{img_filenames[i]}" width="100%">''',
+            color=risk_color,
+            fill=True,
+            fill_color=risk_color,
+        ).add_to(m)
 
     try:
         # overlay = os.path.join('..', 'data', 'downloaded',
