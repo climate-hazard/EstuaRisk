@@ -51,29 +51,19 @@ for i in range(len(df)):
     risk_color = random_colors[i]
     
     # ▷ folium.Marker(...icon=folium.Icon(color='green', icon='leaf')).add_to(m)  # icon can be 'leaf', 'cloud', etc.
-    
-    if name == 'Conwy':
-        with open('plot_Conwy.html') as f:
-            html_code = f.read()
-        
-        chart = folium.Html(html_code, script=True)
-        iframe = folium.IFrame(html_code, script=True)
-        popup_chart = folium.Popup(iframe, max_width='100%')
-        folium.CircleMarker(
-            location=[lat, lon],
-            fill=True,
-            popup=popup_chart).add_to(m)
-    else:
-        folium.CircleMarker(
-            location=[lat, lon],
-            radius=math.sqrt(areas[i]),
-            popup=f'''<h3>{name.replace(' ', '⠀') + '⠀'*12}</h3>
-                    <p>Catchment area: {areas[i]} km²</p>
-                    <img src="{img_filenames[i]}" width="100%">''',
-            color=risk_color,
-            fill=True,
-            fill_color=risk_color,
-        ).add_to(m)
+
+    folium.CircleMarker(
+        location=[lat, lon],
+        radius=math.sqrt(areas[i]),
+        popup=f'''<h3>{name.replace(' ', '⠀') + '⠀'*12}</h3>
+                <p>Catchment area: {areas[i]} km²</p>
+                <iframe src="./plot_Conwy.html" />
+                <a href="./plot_Conwy.html"><img alt="Chart" src="./plot_Conwy.png" width="300" target="_blank" /></a>
+                <img src="{img_filenames[i]}" width="100%">''',
+        color=risk_color,
+        fill=True,
+        fill_color=risk_color,
+    ).add_to(m)
 
     try:
         # overlay = os.path.join('..', 'data', 'downloaded',
@@ -81,7 +71,7 @@ for i in range(len(df)):
         #         'Recorded_Flood_Outlines.json')
         overlay = os.path.join('..', 'data', 'flood_outline',
                 f'Converted_Flood_Outlines_{name}.json')
-        if os.path.getsize(overlay) > 1_000_000:
+        if os.path.getsize(overlay) > 1_000_000:   # 1 MB
             logging.warning(f'Omit big file recorded flooding in {name}')
             continue
 
