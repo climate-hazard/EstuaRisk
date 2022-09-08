@@ -51,24 +51,20 @@ for i in range(len(df)):
     risk_color = random_colors[i]
     
     # ▷ folium.Marker(...icon=folium.Icon(color='green', icon='leaf')).add_to(m)  # icon can be 'leaf', 'cloud', etc.
-
+    # <a href="./plot_Conwy.html"><img alt="Chart" src="./plot_Conwy.png" width="300" target="_blank" /></a>
     folium.CircleMarker(
         location=[lat, lon],
         radius=math.sqrt(areas[i]),
         popup=f'''<h3>{name.replace(' ', '⠀') + '⠀'*12}</h3>
                 <p>Catchment area: {areas[i]} km²</p>
-                <iframe src="./plot_Conwy.html" />
-                <a href="./plot_Conwy.html"><img alt="Chart" src="./plot_Conwy.png" width="300" target="_blank" /></a>
-                <img src="{img_filenames[i]}" width="100%">''',
+                <iframe src="./plot_{name}.html" width="400" height="300" />
+                <img src="{img_filenames[i]}" width="100%" />''',
         color=risk_color,
         fill=True,
         fill_color=risk_color,
     ).add_to(m)
 
     try:
-        # overlay = os.path.join('..', 'data', 'downloaded',
-        #         f'EA_RecordedFloodOutlines_{name}', 'data', 
-        #         'Recorded_Flood_Outlines.json')
         overlay = os.path.join('..', 'data', 'flood_outline',
                 f'Converted_Flood_Outlines_{name}.json')
         if os.path.getsize(overlay) > 1_000_000:   # 1 MB
