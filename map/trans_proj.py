@@ -5,9 +5,9 @@ import os
 import json
 from shapely.geometry import shape, mapping
 
-json_file = os.path.join('..', 'data', 'flood_outline',
+json_file = os.path.join('data', 'flood_outline',
         f'Recorded_Flood_Outlines_Blackwater.json')
-json_file_out = os.path.join('..', 'data', 'flood_outline',
+json_file_out = os.path.join('data', 'flood_outline',
         f'Converted_Flood_Outlines_Blackwater.json')
 
 # Converting coordinates:
@@ -27,11 +27,17 @@ json_data = json.load(open(json_file))
 
 for i, feature in enumerate(json_data['features']):
     coords = feature['geometry']['coordinates']
-    if isinstance(coords[0][0][0], float):
-        (lat, lon) = transformer.transform(coords[0][0][0], coords[0][0][1])
-        json_data['features'][i]['geometry']['coordinates'][0][0] = [lat, lon]
-    else:   # TODO: still problem with deeper nests. See Converted_Flood_Outlines_Blackwater.json file
+    for ii in range(len(coords)):
+        if isinstance(coords[ii][0][0], float):
+            # print('>>>', coords[ii][0][0])
+            (lat, lon) = transformer.transform(coords[ii][0][0], coords[ii][0][1])
+            json_data['features'][i]['geometry']['coordinates'][0][0] = [lat, lon]
+    
+    if not isinstance(coords[0][0][0], float):   # Check is it ok with deeper nests? (Converted_Flood_Outlines_Blackwater.json)
+        print(type(coords[0][0][0]), len(coords[0][0][0]), end='.')
+        # print('>>>>', coords[0][0][0])
         for j, (easting, northing) in enumerate(coords[0][0]):
+            print('>', j, '>', easting)
             (lat, lon) = transformer.transform(easting, northing)
             json_data['features'][i]['geometry']['coordinates'][0][0][j] = [lat, lon]
 

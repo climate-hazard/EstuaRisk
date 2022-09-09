@@ -7,7 +7,7 @@ import pandas as pd
 
 
 # Read geodata
-df = pd.read_csv(os.path.join("..", "estuary.csv"))
+df = pd.read_csv(os.path.join("estuary.csv"))
 mean_lat = df["Lat"].mean()
 mean_lon = df["Lon"].mean()
 
@@ -26,21 +26,21 @@ areas = [139.2, 12.86, 251.8, 344.5, 417.3, 600.9, 1029,
         6000,209, 150, 50, 4325, 9948, 2175.6]
 
 img_filenames = [
-    'img/Flood-Feb2020-Essex-EssexLive.jpg',
-    'img/Flood-Dec2012-Camel-River-AdrianLangdon-blog.jpg',
-    'img/Flood-Feb2022-Glasgow-Eyes.jpg',
-    'img/Flood-Feb2021-Llanrwst-BBC.jpg',
-    'img/Flood-Jan2011-Machynlleth-BBC.jpg',
-    'img/Flood-Nov2012-Exeter-BBC.jpg',
-    'img/Flood-Feb2021-Llanrwst-BBC.jpg',
-    'img/Flood-2020-Edinburgh-OBrien_SWNS.jpg',
-    'img/Flood-2019-York-Humber-Yorkshire-Post.jpg',
-    'img/Flood-Dec2019-KentOnline.jpg',
-    'img/Flood-Nov2018-Milford-Haven-Pembrokeshire-Herald.jpg',
-    'img/Flood-Dec2021-Portsmouth-The-News.jpg',
-    'img/Flood-2022-Severn-Ironbridge-Times.jpg',
-    'img/Flood-2014-Thames-Mirror-UK.jpg',
-    'img/Flood-Dec2013-Newcastle-ChronicleLive.jpg',
+    'map/img/Flood-Feb2020-Essex-EssexLive.jpg',
+    'map/img/Flood-Dec2012-Camel-River-AdrianLangdon-blog.jpg',
+    'map/img/Flood-Feb2022-Glasgow-Eyes-cropped.jpg',
+    'map/img/Flood-Feb2021-Llanrwst-BBC.jpg',
+    'map/img/Flood-Jan2011-Machynlleth-BBC.jpg',
+    'map/img/Flood-Nov2012-Exeter-BBC.jpg',
+    'map/img/Flood-Feb2021-Llanrwst-BBC.jpg',
+    'map/img/Flood-2020-Edinburgh-OBrien_SWNS.jpg',
+    'map/img/Flood-2019-York-Humber-Yorkshire-Post.jpg',
+    'map/img/Flood-Dec2019-KentOnline.jpg',
+    'map/img/Flood-Nov2018-Milford-Haven-Pembrokeshire-Herald.jpg',
+    'map/img/Flood-Dec2021-Portsmouth-The-News.jpg',
+    'map/img/Flood-2022-Severn-Ironbridge-Times.jpg',
+    'map/img/Flood-2014-Thames-Mirror-UK.jpg',
+    'map/img/Flood-Dec2013-Newcastle-ChronicleLive.jpg',
 ]
 
 # Create markers
@@ -65,20 +65,13 @@ for i in range(len(df)):
     ).add_to(m)
 
     try:
-        overlay = os.path.join('..', 'data', 'flood_outline',
+        overlay = os.path.join('map', 'data', 'flood_outline',
                 f'Converted_Flood_Outlines_{name}.json')
         if os.path.getsize(overlay) > 1_000_000:   # 1 MB
             logging.warning(f'Omit big file recorded flooding in {name}')
             continue
 
-        # Converting coordinates:
-        # https://gis.stackexchange.com/questions/166934/python-library-for-converting-geojson-multi-polygon-to-polygon
-        # https://pyproj4.github.io/pyproj/stable/api/transformer.html#pyproj-transform
-        # https://all-geo.org/volcan01010/2012/11/change-coordinates-with-pyproj/
-        # >>> from pyproj import Transformer
-        # >>> transformer = Transformer.from_crs("epsg:27700", "epsg:4326")
-        # >>> transformer.transform(581882.70000000019,214267.03999999911)
-        # (51.7974703631485, 0.6362507110039868)
+        # Converting coordinates (implemented in trans_proj.py)
 
         print(f'Added recorded flooding in {name}')
         folium.GeoJson(overlay, name=f'Recorded flooding in {name}').add_to(m)
@@ -87,7 +80,7 @@ for i in range(len(df)):
     
 
 # Geojson overlay: need to convert from EPSG:27700 to EPSG:4326 (long/lat)
-overlay_flood_geojson = os.path.join('..', 'data', 'downloaded',
+overlay_flood_geojson = os.path.join('data', 'downloaded',
                 'EA_RecordedFloodOutlines_Kent', 'data', 
                 'overlay_epsg.json')
 folium.GeoJson(overlay_flood_geojson, 
