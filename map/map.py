@@ -57,7 +57,7 @@ for i in range(len(df)):
         radius=math.sqrt(areas[i]),
         popup=f'''<h3>{name.replace(' ', '⠀') + '⠀'*12}</h3>
                 <p>Catchment area: {areas[i]} km²</p>
-                <iframe src="./plot_{name}.html" width="400" height="300" />
+                <iframe src="./map/plot_{name}.html" width="400" height="250" />
                 <img src="{img_filenames[i]}" width="100%" />''',
         color=risk_color,
         fill=True,
@@ -80,16 +80,20 @@ for i in range(len(df)):
     
 
 # Geojson overlay: need to convert from EPSG:27700 to EPSG:4326 (long/lat)
-overlay_flood_geojson = os.path.join('data', 'downloaded',
-                'EA_RecordedFloodOutlines_Kent', 'data', 
-                'overlay_epsg.json')
+# overlay_flood_geojson = os.path.join('data', 'downloaded',
+#                 'EA_RecordedFloodOutlines_Kent', 'data', 
+#                 'overlay_epsg.json')
+# folium.GeoJson(overlay_flood_geojson, 
+#             name='recorded flooding in Kent').add_to(m)  # Simplified
+overlay_flood_geojson = os.path.join('data', 'flood_outline',
+                'Converted_Flood_Outlines_Blackwater.json')
 folium.GeoJson(overlay_flood_geojson, 
-            name='recorded flooding in Kent').add_to(m)  # Simplified
+            name='recorded flooding in Blackwater').add_to(m)  # Simplified
 
 # Image overlay (population density)
 img = folium.raster_layers.ImageOverlay(
     name='UK population',
-    image='UK_population_overlay.png',
+    image='map/UK_population_overlay.png',
     bounds=[[-8.4, 1.8], [50, 61]],
     opacity=0.4,
     zindex=1,
