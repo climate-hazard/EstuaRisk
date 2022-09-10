@@ -64,37 +64,31 @@ for i in range(len(df)):
         fill_color=risk_color,
     ).add_to(m)
 
-    try:
-        overlay = os.path.join('map', 'data', 'flood_outline',
-                f'Converted_Flood_Outlines_{name}.json')
-        if os.path.getsize(overlay) > 1_000_000:   # 1 MB
-            logging.warning(f'Omit big file recorded flooding in {name}')
-            continue
+    # try:
+    #     overlay = os.path.join('map', 'data', 'flood_outline',
+    #             f'Converted_Flood_Outlines_{name}.json')
+    #     if os.path.getsize(overlay) > 1_000_000:   # 1 MB
+    #         logging.warning(f'Omit big file recorded flooding in {name}')
+    #         continue
 
-        # Converting coordinates (implemented in trans_proj.py)
+    #     # Converting coordinates from EPSG:27700 to EPSG:4326 (done in trans_proj.py)
 
-        print(f'Added recorded flooding in {name}')
-        folium.GeoJson(overlay, name=f'Recorded flooding in {name}').add_to(m)
-    except:
-        logging.error(f'Error loading recorded flooding in {name}')
+    #     print(f'Added recorded flooding in {name}')
+    #     folium.GeoJson(overlay, name=f'Recorded flooding in {name}').add_to(m)
+    # except:
+    #     logging.error(f'Error loading recorded flooding in {name}')
     
-
-# Geojson overlay: need to convert from EPSG:27700 to EPSG:4326 (long/lat)
-# overlay_flood_geojson = os.path.join('data', 'downloaded',
-#                 'EA_RecordedFloodOutlines_Kent', 'data', 
-#                 'overlay_epsg.json')
-# folium.GeoJson(overlay_flood_geojson, 
-#             name='recorded flooding in Kent').add_to(m)  # Simplified
 overlay_flood_geojson = os.path.join('data', 'flood_outline',
-                'Converted_Flood_Outlines_Blackwater.json')
+                # 'Reduced_test.json')
+                'Reduced_Flood_Outlines_Blackwater.json')
 folium.GeoJson(overlay_flood_geojson, 
-            name='recorded flooding in Blackwater').add_to(m)  # Simplified
+            name='recorded flooding in Blackwater').add_to(m)
 
 # Image overlay (population density)
 img = folium.raster_layers.ImageOverlay(
     name='UK population',
     image='map/UK_population_overlay.png',
-    bounds=[[-8.4, 1.8], [50, 61]],
+    bounds=[[49.9, -8.0], [60.5, 1.8]],
     opacity=0.4,
     zindex=1,
     )

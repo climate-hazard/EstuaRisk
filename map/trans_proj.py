@@ -10,6 +10,23 @@ json_file = os.path.join('data', 'flood_outline',
 json_file_out = os.path.join('data', 'flood_outline',
         f'Converted_Flood_Outlines_Blackwater.json')
 
+# template for geoJSON files as example for `overlay.json` (Cambridge MA)
+json_template = """{
+  "type": "FeatureCollection",
+  "features": %s
+}
+"""
+
+feature_template = """{
+      "type": "Feature",
+      "properties": {},
+      "geometry": {
+        "type": "LineString",
+        "coordinates": %s
+      }
+    }
+"""
+
 # Converting coordinates:
 # https://gis.stackexchange.com/questions/166934/python-library-for-converting-geojson-multi-polygon-to-polygon
 # https://pyproj4.github.io/pyproj/stable/api/transformer.html#pyproj-transform
@@ -31,7 +48,7 @@ for i, feature in enumerate(json_data['features']):
         if isinstance(coords[ii][0][0], float):
             # print('>>>', coords[ii][0][0])
             (lat, lon) = transformer.transform(coords[ii][0][0], coords[ii][0][1])
-            json_data['features'][i]['geometry']['coordinates'][0][0] = [lat, lon]
+            json_data['features'][i]['geometry']['coordinates'][0][0] = [lon, lat]
     
     if not isinstance(coords[0][0][0], float):   # Check is it ok with deeper nests? (Converted_Flood_Outlines_Blackwater.json)
         print(type(coords[0][0][0]), len(coords[0][0][0]), end='.')
@@ -39,7 +56,7 @@ for i, feature in enumerate(json_data['features']):
         for j, (easting, northing) in enumerate(coords[0][0]):
             print('>', j, '>', easting)
             (lat, lon) = transformer.transform(easting, northing)
-            json_data['features'][i]['geometry']['coordinates'][0][0][j] = [lat, lon]
+            json_data['features'][i]['geometry']['coordinates'][0][0][j] = [lon, lat]
 
 with open(json_file_out, 'w') as outfile:
     json.dump(json_data, outfile)
