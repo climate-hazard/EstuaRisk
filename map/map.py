@@ -80,7 +80,8 @@ for i in range(len(df)):
     
 overlay_flood_geojson = os.path.join('data', 'flood_outline',
                 # 'Reduced_test.json')
-                'Reduced_Flood_Outlines_Blackwater.json')
+                # 'Reduced_Flood_Outlines_Blackwater.json')
+                'draft_Blackwater.json')
 folium.GeoJson(overlay_flood_geojson, 
             name='recorded flooding in Blackwater').add_to(m)
 
