@@ -78,12 +78,16 @@ for i in range(len(df)):
     # except:
     #     logging.error(f'Error loading recorded flooding in {name}')
     
-overlay_flood_geojson = os.path.join('data', 'flood_outline',
-                # 'Reduced_test.json')
-                # 'Reduced_Flood_Outlines_Blackwater.json')
-                'draft_Blackwater.json')
-folium.GeoJson(overlay_flood_geojson, 
-            name='recorded flooding in Blackwater').add_to(m)
+    overlay_flood_geojson = os.path.join('data', 'flood_outline',
+                        f'Flood_Outlines_{name}.json')
+    if not os.path.isfile(overlay_flood_geojson):
+        print('File Flood extent not exist for:', name)
+        continue
+    
+    folium.GeoJson(overlay_flood_geojson, 
+                name=f'Recorded flooding in {name}').add_to(m)
+    print('Flood extent', name)
+    
 
 # Image overlay (population density)
 img = folium.raster_layers.ImageOverlay(
