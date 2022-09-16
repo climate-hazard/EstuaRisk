@@ -23,7 +23,8 @@ colors = ['#ffc300', '#ff5733', '#c70039', '#581845']  # orange to dark red (lim
 random_colors = random.choices(colors, k=len(df))
 
 areas = [139.2, 12.86, 251.8, 344.5, 417.3, 600.9, 1029,
-        6000,209, 150, 50, 4325, 9948, 2175.6]
+        6000, 209, 150, 50, 4325, 9948, 2175.6]
+areas = [300] * 14
 
 img_filenames = [
     'map/img/Flood-Feb2020-Essex-EssexLive.jpg',
@@ -49,6 +50,7 @@ for i in range(len(df)):
     lat = df.iloc[i]['Lat']
     lon = df.iloc[i]['Lon']
     risk_color = random_colors[i]
+    risk_color = 'darkred'
     
     # ▷ folium.Marker(...icon=folium.Icon(color='green', icon='leaf')).add_to(m)  # icon can be 'leaf', 'cloud', etc.
     # <a href="./plot_Conwy.html"><img alt="Chart" src="./plot_Conwy.png" width="300" target="_blank" /></a>
