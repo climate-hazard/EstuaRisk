@@ -24,7 +24,6 @@ random_colors = random.choices(colors, k=len(df))
 
 areas = [139.2, 12.86, 251.8, 344.5, 417.3, 600.9, 1029,
         6000, 209, 150, 50, 4325, 9948, 2175.6]
-areas = [300] * 14
 
 img_filenames = [
     'map/img/Flood-Feb2020-Essex-EssexLive.jpg',
@@ -44,66 +43,74 @@ img_filenames = [
     'map/img/Flood-Dec2013-Newcastle-ChronicleLive.jpg',
 ]
 
-# Create markers
-for i in range(len(df)):
-    name = df.iloc[i]['Estuary']    # df['Estuary'][i]
-    lat = df.iloc[i]['Lat']
-    lon = df.iloc[i]['Lon']
-    risk_color = random_colors[i]
-    risk_color = 'darkred'
-    
-    # ▷ folium.Marker(...icon=folium.Icon(color='green', icon='leaf')).add_to(m)  # icon can be 'leaf', 'cloud', etc.
-    # <a href="./plot_Conwy.html"><img alt="Chart" src="./plot_Conwy.png" width="300" target="_blank" /></a>
-    folium.CircleMarker(
-        location=[lat, lon],
-        radius=math.sqrt(areas[i]),
-        popup=f'''<h3>{name.replace(' ', '⠀') + '⠀'*12}</h3>
-                <p>Catchment area: {areas[i]} km²</p>
-                <iframe src="./map/plot_{name}.html" width="400" height="250" />
-                <img src="{img_filenames[i]}" width="100%" />''',
-        color=risk_color,
-        fill=True,
-        fill_color=risk_color,
-    ).add_to(m)
 
-    # try:
-    #     overlay = os.path.join('map', 'data', 'flood_outline',
-    #             f'Converted_Flood_Outlines_{name}.json')
-    #     if os.path.getsize(overlay) > 1_000_000:   # 1 MB
-    #         logging.warning(f'Omit big file recorded flooding in {name}')
-    #         continue
+def create_map(show_dens=False, outfile=True):
+    ''' Creates a Folium map with optional overlay and HTML file output. '''
+    # Create markers
+    for i in range(len(df)):
+        name = df.iloc[i]['Estuary']    # df['Estuary'][i]
+        lat = df.iloc[i]['Lat']
+        lon = df.iloc[i]['Lon']
+        risk_color = random_colors[i]
+        risk_color = 'darkred'
+        
+        # ▷ folium.Marker(...icon=folium.Icon(color='green', icon='leaf')).add_to(m)  # icon can be 'leaf', 'cloud', etc.
+        # <a href="./plot_Conwy.html"><img alt="Chart" src="./plot_Conwy.png" width="300" target="_blank" /></a>
+        folium.CircleMarker(
+            location=[lat, lon],
+            radius=math.sqrt(300), # math.sqrt(areas[i]),
+            popup=f'''<h3>{name.replace(' ', '⠀') + '⠀'*12}</h3>
+                    <p>Catchment area: {areas[i]} km²</p>
+                    <iframe src="./map/plot_{name}.html" width="400" height="250" />
+                    <img src="{img_filenames[i]}" width="100%" />''',
+            color=risk_color,
+            fill=True,
+            fill_color=risk_color,
+        ).add_to(m)
 
-    #     # Converting coordinates from EPSG:27700 to EPSG:4326 (done in trans_proj.py)
+        # try:
+        #     overlay = os.path.join('map', 'data', 'flood_outline',
+        #             f'Converted_Flood_Outlines_{name}.json')
+        #     if os.path.getsize(overlay) > 1_000_000:   # 1 MB
+        #         logging.warning(f'Omit big file recorded flooding in {name}')
+        #         continue
 
-    #     print(f'Added recorded flooding in {name}')
-    #     folium.GeoJson(overlay, name=f'Recorded flooding in {name}').add_to(m)
-    # except:
-    #     logging.error(f'Error loading recorded flooding in {name}')
-    
-    overlay_flood_geojson = os.path.join('data', 'flood_outline',
-                        f'Flood_Outlines_{name}.json')
-    if not os.path.isfile(overlay_flood_geojson):
-        print('File Flood extent not exist for:', name)
-        continue
-    
-    folium.GeoJson(overlay_flood_geojson, 
-                name=f'Recorded flooding in {name}').add_to(m)
-    print('Flood extent', name)
-    
+        #     # Converting coordinates from EPSG:27700 to EPSG:4326 (done in trans_proj.py)
 
-# Image overlay (population density)
-img = folium.raster_layers.ImageOverlay(
-    name='UK population',
-    image='map/UK_population_overlay.png',
-    bounds=[[49.9, -8.0], [60.5, 1.8]],
-    opacity=0.4,
-    zindex=1,
-    )
-img.add_to(m)
+        #     print(f'Added recorded flooding in {name}')
+        #     folium.GeoJson(overlay, name=f'Recorded flooding in {name}').add_to(m)
+        # except:
+        #     logging.error(f'Error loading recorded flooding in {name}')
+        
+        overlay_flood_geojson = os.path.join('data', 'flood_outline',
+                            f'Flood_Outlines_{name}.json')
+        if not os.path.isfile(overlay_flood_geojson):
+            print('File Flood extent not exist for:', name)
+            continue
+        
+        folium.GeoJson(overlay_flood_geojson, 
+                    name=f'Recorded flooding in {name}').add_to(m)
+        print('Flood extent', name)
+        
+    if show_dens:
+        # Image overlay (population density)
+        img = folium.raster_layers.ImageOverlay(
+            name='UK population',
+            image='map/UK_population_overlay.png',
+            bounds=[[49.9, -8.0], [60.5, 1.8]],
+            opacity=0.4,
+            zindex=1,
+            )
+        img.add_to(m)
 
-folium.LayerControl().add_to(m)
+    folium.LayerControl().add_to(m)
 
-m.save('map.html')
+    if outfile:
+        m.save('map.html')
 
-# Create custom marker icon
-# logoIcon = folium.features.CustomIcon('logo.png', icon_size=(50, 50))
+    # Create custom marker icon
+    # logoIcon = folium.features.CustomIcon('logo.png', icon_size=(50, 50))
+
+
+if __name__ == '__main__':
+    create_map(show_dens=False, outfile=True)
