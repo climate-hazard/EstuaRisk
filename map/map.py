@@ -91,7 +91,16 @@ def create_map(show_dens=False, outfile=True):
         folium.GeoJson(overlay_flood_geojson, 
                     name=f'Recorded flooding in {name}').add_to(m)
         print('Flood extent', name)
-        
+
+    img = folium.raster_layers.ImageOverlay(
+        name='Flood Conwy',
+        image='map/Conwy_flood.png',
+        bounds=[[53.095, -3.895], [53.325, -3.735]],
+        opacity=0.5,
+        zindex=1,
+        )
+    img.add_to(m)
+
     if show_dens:
         # Image overlay (population density)
         img = folium.raster_layers.ImageOverlay(
