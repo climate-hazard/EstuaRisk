@@ -95,7 +95,16 @@ def create_map(show_dens=False, outfile=True):
     img = folium.raster_layers.ImageOverlay(
         name='Flood Conwy',
         image='map/Conwy_flood.png',
-        bounds=[[53.095, -3.895], [53.325, -3.735]],
+        bounds=[[53.096, -3.895], [53.326, -3.735]],
+        opacity=0.5,
+        zindex=1,
+        )
+    img.add_to(m)
+
+    img = folium.raster_layers.ImageOverlay(
+        name='Flood Dyfi',
+        image='map/Dyfi_flood_tr.png',
+        bounds=[[52.479, -4.086], [52.601, -3.850]],
         opacity=0.5,
         zindex=1,
         )
